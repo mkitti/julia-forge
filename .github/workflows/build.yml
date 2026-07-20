@@ -37,17 +37,17 @@ jobs:
       run: |
         echo "$(pwd)/.pixi/envs/default/bin" >> $GITHUB_PATH
 
-    - name: Run code in changed subdirectories
+    - name: Build release recipe (julia-forge)
       shell: bash
       env:
         TARGET_PLATFORM: ${{ matrix.target }}
-
       run: |
-        rattler-build build --recipe-dir . \
+        rattler-build build --recipe-dir julia \
           --skip-existing=all --target-platform=$TARGET_PLATFORM \
-          -c conda-forge -c https://prefix.dev/julia-forge
+          -c conda-forge -c https://prefix.dev/julia-forge \
+          --output-dir output-release
 
-    - name: Upload all packages
+    - name: Upload release packages
       shell: bash
       # do not upload on PR
       if: github.event_name == 'push'
@@ -55,6 +55,6 @@ jobs:
         PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
       run: |
         # ignore errors because we want to ignore duplicate packages
-        for file in output/**/*.conda; do
+        for file in output-release/**/*.conda; do
           rattler-build upload prefix -c julia-forge "$file" || true
         done
