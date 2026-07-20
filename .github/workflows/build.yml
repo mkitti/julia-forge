@@ -37,6 +37,9 @@ jobs:
       run: |
         echo "$(pwd)/.pixi/envs/default/bin" >> $GITHUB_PATH
 
+    # julia/ (tracks juliaup "release") and julia-lts/ (tracks juliaup "lts")
+    # both produce a package literally named `julia`, so each is built and
+    # uploaded to its own channel rather than merged into one output dir.
     - name: Build release recipe (julia-forge)
       shell: bash
       env:
@@ -46,6 +49,16 @@ jobs:
           --skip-existing=all --target-platform=$TARGET_PLATFORM \
           -c conda-forge -c https://prefix.dev/julia-forge \
           --output-dir output-release
+
+    - name: Build lts recipe (julia-forge-lts)
+      shell: bash
+      env:
+        TARGET_PLATFORM: ${{ matrix.target }}
+      run: |
+        rattler-build build --recipe-dir julia-lts \
+          --skip-existing=all --target-platform=$TARGET_PLATFORM \
+          -c conda-forge -c https://prefix.dev/julia-forge-lts \
+          --output-dir output-lts
 
     - name: Upload release packages
       shell: bash
@@ -57,4 +70,16 @@ jobs:
         # ignore errors because we want to ignore duplicate packages
         for file in output-release/**/*.conda; do
           rattler-build upload prefix -c julia-forge "$file" || true
+        done
+
+    - name: Upload lts packages
+      shell: bash
+      # do not upload on PR
+      if: github.event_name == 'push'
+      env:
+        PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
+      run: |
+        # ignore errors because we want to ignore duplicate packages
+        for file in output-lts/**/*.conda; do
+          rattler-build upload prefix -c julia-forge-lts "$file" || true
         done

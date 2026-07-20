@@ -24,16 +24,19 @@ jobs:
     - name: Update release channel recipe
       run: pixi run update-recipe-release
 
+    - name: Update lts channel recipe
+      run: pixi run update-recipe-lts
+
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v7
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: Update julia recipe to latest juliaup release version
-        title: '[AUTO] Update julia recipe'
+        commit-message: Update julia recipes to latest juliaup channel versions
+        title: '[AUTO] Update julia recipes'
         body: >-
-          juliaup's release channel has moved forward; this PR regenerates
-          julia/recipe.yaml with the new version, download URL, and sha256
-          hashes.
+          juliaup's release/lts channels have moved forward; this PR
+          regenerates julia/recipe.yaml and/or julia-lts/recipe.yaml with the
+          new version, download URLs, and sha256 hashes.
           Please note: CI will not automatically run on this PR.
           To trigger CI, please close and re-open this PR.
         branch: update-recipes

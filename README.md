@@ -10,15 +10,26 @@ channel model: `scripts/update_recipe.py` resolves a juliaup channel
 versiondb, and looks up the per-platform download URL/sha256 from the same
 upstream `versions.json` juliaup's own version-db generator consumes.
 
-The `julia/` recipe tracks juliaup's `release` channel and is published to
-the `julia-forge` prefix.dev channel.
+## Channels
 
-## Updating the recipe
+There are two prefix.dev channels, each hosting a package literally named
+`julia` (so anything depending on `julia` resolves correctly regardless of
+which one you use) — pick **one**, not both, in the same environment, since
+having both channels enabled at once gives the solver two different versions
+of the same package name to choose between:
+
+| prefix.dev channel | recipe             | tracks juliaup channel |
+|---------------------|--------------------|-------------------------|
+| `julia-forge`       | `julia/`           | `release`               |
+| `julia-forge-lts`   | `julia-lts/`        | `lts`                   |
+
+## Updating recipes
 
 ```
 pixi run update-recipe-release
+pixi run update-recipe-lts
 ```
 
-This is a no-op if the recipe is already at the version the `release`
-channel currently points to. `.github/workflows/update-recipe.yml` runs it
-on a schedule and opens a PR when the channel has moved forward.
+Each is a no-op if the recipe is already at the version its juliaup channel
+currently points to. `.github/workflows/update-recipe.yml` runs both on a
+schedule and opens a PR when either channel has moved forward.

@@ -8,6 +8,7 @@ platforms = ["osx-arm64", "linux-64", "win-64", "osx-64"]
 
 [tasks]
 update-recipe-release = "python scripts/update_recipe.py julia/recipe.yaml --channel release"
+update-recipe-lts = "python scripts/update_recipe.py julia-lts/recipe.yaml --channel lts"
 
 [dependencies]
 rattler-build = ">=0.15,<1"
