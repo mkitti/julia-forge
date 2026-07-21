@@ -1,5 +1,9 @@
 name: Build all packages
 
+# required for prefix.dev trusted publishing (OIDC) on the upload steps
+permissions:
+  id-token: write
+
 on:
   push:
     branches:
@@ -22,7 +26,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 2
     - uses: prefix-dev/setup-pixi@v0.10.0
@@ -48,6 +52,12 @@ jobs:
           -c conda-forge -c https://prefix.dev/julia-forge \
           --output-dir output-release
 
+    # lts builds are also uploaded to julia-forge (so users can get an lts
+    # build there via a plain version pin, e.g. julia=1.10.*, without adding
+    # a second channel) -- skip-existing checks julia-forge, not
+    # julia-forge-lts, since --skip-existing=all skips if a match is found
+    # in *any* listed channel and julia-forge is the one that needs the new
+    # version to actually show up before this can be skipped safely
     - name: Build lts recipe (julia-forge-lts)
       shell: bash
       env:
@@ -55,29 +65,41 @@ jobs:
       run: |
         rattler-build build --recipe-dir julia-lts \
           --skip-existing=all --target-platform=$TARGET_PLATFORM \
-          -c conda-forge -c https://prefix.dev/julia-forge-lts \
+          -c conda-forge -c https://prefix.dev/julia-forge \
           --output-dir output-lts
 
     - name: Upload release packages
       shell: bash
       # do not upload on PR; allow manual re-trigger via workflow_dispatch
+      # uses prefix.dev trusted publishing (OIDC) via the id-token permission
+      # above -- no PREFIX_API_KEY needed; julia-forge must list this repo
+      # and workflow under its "Trusted Publishers" settings on prefix.dev
       if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-      env:
-        PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
       run: |
-        # ignore errors because we want to ignore duplicate packages
+        shopt -s nullglob
+        exit_code=0
         for file in output-release/**/*.conda; do
-          rattler-build upload prefix -c julia-forge "$file" || true
+          rattler-build upload prefix -c julia-forge "$file" || exit_code=1
         done
+        exit $exit_code
 
     - name: Upload lts packages
       shell: bash
       # do not upload on PR; allow manual re-trigger via workflow_dispatch
+      # uses prefix.dev trusted publishing (OIDC) via the id-token permission
+      # above -- no PREFIX_API_KEY needed; both julia-forge-lts and
+      # julia-forge must list this repo and workflow under their
+      # "Trusted Publishers" settings on prefix.dev
       if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-      env:
-        PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
       run: |
-        # ignore errors because we want to ignore duplicate packages
+        shopt -s nullglob
+        exit_code=0
         for file in output-lts/**/*.conda; do
+          # julia-forge-lts is only reached here (rather than being skipped
+          # at build time) while backfilling julia-forge with a version it
+          # already has, so an "already exists" conflict here is expected
+          # and not a real failure
           rattler-build upload prefix -c julia-forge-lts "$file" || true
+          rattler-build upload prefix -c julia-forge "$file" || exit_code=1
         done
+        exit $exit_code

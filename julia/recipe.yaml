@@ -35,7 +35,7 @@ build:
         - rm -rf $PREFIX/LICENSE.md
     - if: win
       then:
-        - robocopy %SRC_DIR% %LIBRARY_PREFIX% /E
+        - robocopy %SRC_DIR% %LIBRARY_PREFIX% /E & if %ERRORLEVEL% LEQ 7 (verify>nul) else (exit /b %ERRORLEVEL%)
         - del /F /Q %LIBRARY_PREFIX%\LICENSE.md
 
   dynamic_linking:
@@ -43,7 +43,7 @@ build:
 
 tests:
   - script:
-      - julia -e 'println("Hello, world!")'
+      - julia -e "println(1+1)"
       - julia --help
 
 about:
