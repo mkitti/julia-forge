@@ -52,6 +52,12 @@ jobs:
           -c conda-forge -c https://prefix.dev/julia-forge \
           --output-dir output-release
 
+    # lts builds are also uploaded to julia-forge (so users can get an lts
+    # build there via a plain version pin, e.g. julia=1.10.*, without adding
+    # a second channel) -- skip-existing checks julia-forge, not
+    # julia-forge-lts, since --skip-existing=all skips if a match is found
+    # in *any* listed channel and julia-forge is the one that needs the new
+    # version to actually show up before this can be skipped safely
     - name: Build lts recipe (julia-forge-lts)
       shell: bash
       env:
@@ -59,7 +65,7 @@ jobs:
       run: |
         rattler-build build --recipe-dir julia-lts \
           --skip-existing=all --target-platform=$TARGET_PLATFORM \
-          -c conda-forge -c https://prefix.dev/julia-forge-lts \
+          -c conda-forge -c https://prefix.dev/julia-forge \
           --output-dir output-lts
 
     - name: Upload release packages
@@ -81,13 +87,15 @@ jobs:
       shell: bash
       # do not upload on PR; allow manual re-trigger via workflow_dispatch
       # uses prefix.dev trusted publishing (OIDC) via the id-token permission
-      # above -- no PREFIX_API_KEY needed; julia-forge-lts must list this repo
-      # and workflow under its "Trusted Publishers" settings on prefix.dev
+      # above -- no PREFIX_API_KEY needed; both julia-forge-lts and
+      # julia-forge must list this repo and workflow under their
+      # "Trusted Publishers" settings on prefix.dev
       if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
       run: |
         shopt -s nullglob
         exit_code=0
         for file in output-lts/**/*.conda; do
           rattler-build upload prefix -c julia-forge-lts "$file" || exit_code=1
+          rattler-build upload prefix -c julia-forge "$file" || exit_code=1
         done
         exit $exit_code
