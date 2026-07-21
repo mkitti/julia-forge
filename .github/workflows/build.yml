@@ -95,7 +95,11 @@ jobs:
         shopt -s nullglob
         exit_code=0
         for file in output-lts/**/*.conda; do
-          rattler-build upload prefix -c julia-forge-lts "$file" || exit_code=1
+          # julia-forge-lts is only reached here (rather than being skipped
+          # at build time) while backfilling julia-forge with a version it
+          # already has, so an "already exists" conflict here is expected
+          # and not a real failure
+          rattler-build upload prefix -c julia-forge-lts "$file" || true
           rattler-build upload prefix -c julia-forge "$file" || exit_code=1
         done
         exit $exit_code
