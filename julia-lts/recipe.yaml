@@ -54,4 +54,12 @@ about:
   homepage: https://julialang.org/
   license: MIT
   summary: Julia is a high-level, high-performance dynamic programming language for technical computing. This build tracks the juliaup "lts" channel and is published to the julia-forge-lts prefix.dev channel (as opposed to julia-forge, which tracks "release").
+  description: |
+    This is the official Julia binary distribution, repackaged as a conda
+    package with no modifications. Version tracking is driven by juliaup
+    (https://github.com/JuliaLang/juliaup): this build follows juliaup's
+    "lts" channel, which always points to the latest long-term-support
+    Julia release, and is published to the julia-forge-lts prefix.dev
+    channel. For juliaup's "release" channel instead, see the julia-forge
+    channel.
   license_file: LICENSE.md
