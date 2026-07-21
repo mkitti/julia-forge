@@ -1,0 +1,43 @@
+name: Update recipes
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+
+  update-recipes:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: prefix-dev/setup-pixi@v0.10.0
+      with:
+        pixi-version: v0.70.1
+        cache: true
+
+    - name: Update release channel recipe
+      run: pixi run update-recipe-release
+
+    - name: Update lts channel recipe
+      run: pixi run update-recipe-lts
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v7
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: Update julia recipes to latest juliaup channel versions
+        title: '[AUTO] Update julia recipes'
+        body: >-
+          juliaup's release/lts channels have moved forward; this PR
+          regenerates julia/recipe.yaml and/or julia-lts/recipe.yaml with the
+          new version, download URLs, and sha256 hashes.
+          Please note: CI will not automatically run on this PR.
+          To trigger CI, please close and re-open this PR.
+        branch: update-recipes
+        labels: no changelog

@@ -1,0 +1,65 @@
+context:
+  version: 1.10.11
+
+package:
+  name: julia
+  version: ${{ version }}
+
+source:
+  - if: osx and arm64
+    then:
+      - url: https://julialang-s3.julialang.org/bin/mac/aarch64/1.10/julia-1.10.11-macaarch64.tar.gz
+        sha256: bd5706c10dceffeebe56d2d3f371e3d8d4b27195cad7489f22f6292af907f05b
+  - if: osx and x86_64
+    then:
+      - url: https://julialang-s3.julialang.org/bin/mac/x64/1.10/julia-1.10.11-mac64.tar.gz
+        sha256: bdc6f52ee4fdcf13f0d0e2480733742b7eefb7fbfc66c518daca6e19e804f34b
+  - if: linux and aarch64
+    then:
+      - url: https://julialang-s3.julialang.org/bin/linux/aarch64/1.10/julia-1.10.11-linux-aarch64.tar.gz
+        sha256: 3004a980420e5f3a08847f44db9699105d9febc519205af52764fc97eb12c6b2
+  - if: linux and ppc64le
+    then:
+      - url: https://julialang-s3.julialang.org/bin/linux/ppc64le/1.10/julia-1.10.11-linux-ppc64le.tar.gz
+        sha256: 2dee344a4de2a1f0ef3ac715dcf8c7d2a77466f120ad8065d06f688ea9f595d9
+  - if: linux and x86_64
+    then:
+      - url: https://julialang-s3.julialang.org/bin/linux/x64/1.10/julia-1.10.11-linux-x86_64.tar.gz
+        sha256: fb49c6b174600cd2051e37ba3f7330f8acf06dd00bce609bab6611387fdb37bf
+  - if: win and x86_64
+    then:
+      - url: https://julialang-s3.julialang.org/bin/winnt/x64/1.10/julia-1.10.11-win64.tar.gz
+        sha256: 84c462f25984dc35515b12d64da8082fd62fc8c7d54123941c9ca5badfd636bd
+
+build:
+  script:
+    - if: unix
+      then:
+        - cp -r $SRC_DIR/* $PREFIX/
+        - rm -rf $PREFIX/LICENSE.md
+    - if: win
+      then:
+        - robocopy %SRC_DIR% %LIBRARY_PREFIX% /E
+        - del /F /Q %LIBRARY_PREFIX%\LICENSE.md
+
+  dynamic_linking:
+    binary_relocation: false
+
+tests:
+  - script:
+      - julia -e 'println("Hello, world!")'
+      - julia --help
+
+about:
+  homepage: https://julialang.org/
+  license: MIT
+  summary: Julia is a high-level, high-performance dynamic programming language for technical computing. This build tracks the juliaup "lts" channel and is published to the julia-forge-lts prefix.dev channel (as opposed to julia-forge, which tracks "release").
+  description: |
+    This is the official Julia binary distribution, repackaged as a conda
+    package with no modifications. Version tracking is driven by juliaup
+    (https://github.com/JuliaLang/juliaup): this build follows juliaup's
+    "lts" channel, which always points to the latest long-term-support
+    Julia release, and is published to the julia-forge-lts prefix.dev
+    channel. For juliaup's "release" channel instead, see the julia-forge
+    channel.
+  license_file: LICENSE.md
