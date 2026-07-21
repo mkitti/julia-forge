@@ -40,6 +40,7 @@ build:
     - if: win
       then:
         - robocopy %SRC_DIR% %LIBRARY_PREFIX% /E
+        - if %ERRORLEVEL% GEQ 8 exit /b %ERRORLEVEL%
         - del /F /Q %LIBRARY_PREFIX%\LICENSE.md
 
   dynamic_linking:
