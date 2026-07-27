@@ -19,9 +19,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - { target: linux-64,  os: ubuntu-22.04 }
-          - { target: win-64,    os: windows-latest }
-          - { target: osx-arm64, os: macos-latest }
+          - { target: linux-64,      os: ubuntu-22.04 }
+          - { target: linux-aarch64, os: ubuntu-24.04-arm }
+          - { target: win-64,        os: windows-latest }
+          - { target: osx-arm64,     os: macos-latest }
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
