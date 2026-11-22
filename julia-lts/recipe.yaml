@@ -1,5 +1,5 @@
 context:
-  version: 1.10.12
+  version: 1.10.14
 
 package:
   name: julia
@@ -8,28 +8,28 @@ package:
 source:
   - if: osx and arm64
     then:
-      - url: https://julialang-s3.julialang.org/bin/mac/aarch64/1.10/julia-1.10.12-macaarch64.tar.gz
-        sha256: 53b12aee2a20d56d498589d21ab7f5f848bda0bbd75afdc5d94fe8876dab783f
+      - url: https://julialang-s3.julialang.org/bin/mac/aarch64/1.10/julia-1.10.14-macaarch64.tar.gz
+        sha256: 8af0c58233c056faa4ea220f335e3c9776b2d5b41957d82c1718e41c45a655d5
   - if: osx and x86_64
     then:
-      - url: https://julialang-s3.julialang.org/bin/mac/x64/1.10/julia-1.10.12-mac64.tar.gz
-        sha256: 5af0ae55525323db4d9e26706dd3bd39d60ae6f8d0e88481223155c78b4ec118
+      - url: https://julialang-s3.julialang.org/bin/mac/x64/1.10/julia-1.10.14-mac64.tar.gz
+        sha256: 8cc328f0e10762cd0534f519b2b47cd7dc116963208e2838c85589e248092865
   - if: linux and aarch64
     then:
-      - url: https://julialang-s3.julialang.org/bin/linux/aarch64/1.10/julia-1.10.12-linux-aarch64.tar.gz
-        sha256: cc257b21967049642bfe17de1aff7dae17477eba4f423f98cb400c002080e5a2
+      - url: https://julialang-s3.julialang.org/bin/linux/aarch64/1.10/julia-1.10.14-linux-aarch64.tar.gz
+        sha256: 7bdd277c5c4a6069a35f303b0944e374908ccc9ff4cfb5df1478a047120264a8
   - if: linux and ppc64le
     then:
       - url: https://julialang-s3.julialang.org/bin/linux/ppc64le/1.10/julia-1.10.11-linux-ppc64le.tar.gz
         sha256: 2dee344a4de2a1f0ef3ac715dcf8c7d2a77466f120ad8065d06f688ea9f595d9
   - if: linux and x86_64
     then:
-      - url: https://julialang-s3.julialang.org/bin/linux/x64/1.10/julia-1.10.12-linux-x86_64.tar.gz
-        sha256: b0c50dfe349d76ffc8580d24e0c0be623988a6d91ed57ad8b73c0137fd27bc0d
+      - url: https://julialang-s3.julialang.org/bin/linux/x64/1.10/julia-1.10.14-linux-x86_64.tar.gz
+        sha256: 6fd79bad660a4e34205da931bdd3afc6d86613a8189b76acecb26e6f06a67386
   - if: win and x86_64
     then:
-      - url: https://julialang-s3.julialang.org/bin/winnt/x64/1.10/julia-1.10.12-win64.tar.gz
-        sha256: 5b82ac507e0e90313eaf00a7a6e6f9566049b03b3ae1491f42d38c78ef950c98
+      - url: https://julialang-s3.julialang.org/bin/winnt/x64/1.10/julia-1.10.14-win64.tar.gz
+        sha256: 9720389885b57675f34084ae5049250769d5d6ac020fdff4979dcb5b7a4265f7
 
 build:
   script:
